@@ -1,0 +1,12 @@
+{
+  "name": "PWA Chat Board",
+  "short_name": "PWA Chat",
+  "description": "以 Flask + Firebase 建立的留言板聊天室 PWA",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f6efe4",
+  "theme_color": "#1f5c4a",
+  "lang": "zh-TW",
+  "orientation": "portrait",
+  "icons": []
+}
