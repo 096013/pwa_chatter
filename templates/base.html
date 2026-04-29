@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#1f5c4a">
+  <title>{% block title %}PWA Chat{% endblock %}</title>
+  <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar">
+      <div class="brand">
+        <h1>點讚聊天室</h1>
+        <p>Flask + Firebase Realtime Database + PWA</p>
+      </div>
+      {% if current_user %}
+      <div class="row userbar">
+        <span>登入帳號：{{ current_user }}</span>
+        <a class="btn alt" href="{{ url_for('board') }}">留言板</a>
+        <a class="btn alt" href="{{ url_for('settings') }}">個人設定</a>
+        <a class="btn alt" href="{{ url_for('logout') }}">登出</a>
+      </div>
+      {% endif %}
+    </header>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+      <ul class="flash-list">
+        {% for category, message in messages %}
+        <li class="flash {{ category }}">{{ message }}</li>
+        {% endfor %}
+      </ul>
+      {% endif %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
+  </main>
+
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", function () {
+        navigator.serviceWorker.register(
+          "{{ url_for('static', filename='sw.js', v='2') }}",
+          { updateViaCache: "none" }
+        );
+      });
+    }
+  </script>
+</body>
+</html>

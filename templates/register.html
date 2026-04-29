@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}註冊 | 點讚聊天室{% endblock %}
+
+{% block content %}
+<section class="panel" style="max-width: 560px; margin: 0 auto;">
+  <div class="stack">
+    <div>
+      <h2>Screen3：註冊</h2>
+      <p class="hint">建立帳號資料後回到登入頁，流程對應 PDF 的 Screen3。</p>
+    </div>
+
+    <form method="post" class="form-grid">
+      <label>
+        新帳號
+        <input type="text" name="username" autocomplete="username" required>
+      </label>
+      <label>
+        新密碼
+        <input type="password" name="password" autocomplete="new-password" required>
+      </label>
+      <label>
+        確認密碼
+        <input type="password" name="confirm_password" autocomplete="new-password" required>
+      </label>
+      <div class="actions">
+        <button class="btn" type="submit">建立帳號</button>
+        <a class="btn alt" href="{{ url_for('login') }}">回登入頁</a>
+      </div>
+    </form>
+  </div>
+</section>
+{% endblock %}

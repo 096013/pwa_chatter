@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}登入 | 點讚聊天室{% endblock %}
+
+{% block content %}
+<section class="panel" style="max-width: 520px; margin: 0 auto;">
+  <div class="stack">
+    <div>
+      <h2>Screen1：登入</h2>
+      <p class="hint">輸入帳號密碼後進入留言板，流程對應 PDF 的 Screen1。</p>
+    </div>
+
+    <form method="post" class="form-grid">
+      <label>
+        帳號
+        <input type="text" name="username" autocomplete="username" required>
+      </label>
+      <label>
+        密碼
+        <input type="password" name="password" autocomplete="current-password" required>
+      </label>
+      <div class="actions">
+        <button class="btn" type="submit">登入</button>
+        <a class="btn alt" href="{{ url_for('register') }}">前往註冊</a>
+      </div>
+    </form>
+  </div>
+</section>
+{% endblock %}

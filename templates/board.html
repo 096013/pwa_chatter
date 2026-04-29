@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+
+{% block title %}留言板 | 點讚聊天室{% endblock %}
+
+{% block content %}
+<section class="two-col">
+  <article class="panel">
+    <div class="stack">
+      <div>
+        <h2>Screen2：留言板</h2>
+        <p class="hint">登入後可發言、可對每篇文章按讚，並每 5 秒自動同步一次最新留言。</p>
+      </div>
+
+      <form method="post" class="form-grid">
+        <label>
+          請輸入留言內容
+          <textarea name="article" placeholder="輸入你想分享的內容..." required></textarea>
+        </label>
+        <div class="actions">
+          <button class="btn" type="submit">送出留言</button>
+          <a class="btn alt" href="{{ url_for('settings') }}">個人設定</a>
+        </div>
+      </form>
+    </div>
+  </article>
+
+  <article class="panel">
+    <div class="stack">
+      <div>
+        <h2>即時留言列表</h2>
+        <p class="hint">資料來源：{{ firebase_base_url }}/{{ firebase_root }}</p>
+      </div>
+
+      <div class="messages" id="message-list">
+        {% for message in messages %}
+        <section class="card">
+          <h3>{{ message.article }}</h3>
+          <p class="meta">作者：{{ message.author }}</p>
+          <p class="meta">按讚數：{{ message.likes }}</p>
+          <form method="post" action="{{ url_for('like', message_id=message.id) }}">
+            <button
+              class="btn warn"
+              type="submit"
+              onclick="return confirm('是否喜歡這篇文章？');"
+            >
+              按讚
+            </button>
+          </form>
+        </section>
+        {% else %}
+        <section class="card">
+          <h3>目前還沒有留言</h3>
+          <p class="meta">你可以成為第一位發文的人。</p>
+        </section>
+        {% endfor %}
+      </div>
+    </div>
+  </article>
+</section>
+
+<script>
+  const messageList = document.getElementById("message-list");
+
+  function escapeHtml(value) {
+    return String(value)
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#39;");
+  }
+
+  function renderMessages(messages) {
+    if (!messages.length) {
+      messageList.innerHTML = `
+        <section class="card">
+          <h3>目前還沒有留言</h3>
+          <p class="meta">你可以成為第一位發文的人。</p>
+        </section>
+      `;
+      return;
+    }
+
+    messageList.innerHTML = messages.map((message) => `
+      <section class="card">
+        <h3>${escapeHtml(message.article)}</h3>
+        <p class="meta">作者：${escapeHtml(message.author)}</p>
+        <p class="meta">按讚數：${Number(message.likes || 0)}</p>
+        <form method="post" action="/like/${encodeURIComponent(message.id)}">
+          <button
+            class="btn warn"
+            type="submit"
+            onclick="return confirm('是否喜歡這篇文章？');"
+          >
+            按讚
+          </button>
+        </form>
+      </section>
+    `).join("");
+  }
+
+  async function refreshMessages() {
+    try {
+      const response = await fetch("/api/messages", {
+        cache: "no-store",
+        credentials: "same-origin",
+        headers: {
+          "X-Requested-With": "fetch"
+        }
+      });
+
+      if (!response.ok) {
+        return;
+      }
+
+      const data = await response.json();
+      if (data.ok && Array.isArray(data.messages)) {
+        renderMessages(data.messages);
+      }
+    } catch (error) {
+      console.debug("message refresh skipped", error);
+    }
+  }
+
+  refreshMessages();
+  window.setInterval(refreshMessages, 5000);
+</script>
+{% endblock %}
